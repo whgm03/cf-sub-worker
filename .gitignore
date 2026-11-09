@@ -1,0 +1,15 @@
+# Secrets & local dev configuration
+secrets.json
+.dev.vars
+.env
+.env.*
+
+# Build & temporary files
+.dry-run/
+.wrangler/
+dist/
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db

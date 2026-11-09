@@ -1,0 +1,64 @@
+# =====================================================================
+# 新账号 / 新域名部署模板
+# 用法：复制为 wrangler.toml，然后把所有 <尖括号> 占位符替换成你自己的值。
+# 注意：这里只放“非敏感”配置；密码、UUID、签名密钥一律用 wrangler secret 设置。
+# =====================================================================
+
+name = "<WORKER_NAME>"                 # 例如 sub-example-com，只能小写字母/数字/连字符
+main = "_worker.js"
+compatibility_date = "2026-09-23"
+compatibility_flags = ["nodejs_compat"]
+account_id = "<CLOUDFLARE_ACCOUNT_ID>" # npx wrangler whoami 可查看 (可选，多账号时使用)
+workers_dev = true                     # 保留 *.workers.dev 备用入口
+
+# VLESS TCP 出口固定在美国西部附近，避免 Google 将亚洲边缘出口误判为中国区
+[placement]
+region = "aws:us-west-2"
+
+# 自定义域名：域名必须已托管在同一个 Cloudflare 账号下（如果不绑定自定义域名可删除此段）
+[[routes]]
+pattern = "<SUB_DOMAIN>"               # 例如 sub.example.com
+custom_domain = true
+
+# 定时触发器：每 30 分钟执行一次优选 IP 轮转与出口 IP 健康检查
+[triggers]
+crons = ["*/30 * * * *"]
+
+[vars]
+DOMAIN = "<SUB_DOMAIN>"
+SUB_TITLE = "Preferred-IP 三网实测订阅"
+CACHE_TTL = "300"
+
+# 管理员邮箱（非敏感）；管理员密码请用 secret: ADMIN_PASSWORD_V9
+ADMIN_EMAIL = "<ADMIN_EMAIL>"
+
+# 订阅与令牌策略：严格用户隔离，关闭公共免密订阅
+ALLOW_PUBLIC_SUB = "0"
+ALLOW_STATELESS_TOKENS = "1"
+ALLOW_LEGACY_WS = "1"
+ALLOW_REGION_DIRECT_FALLBACK = "1"
+DEFAULT_REGION = "DIRECT"
+PROFILE_UPDATE_INTERVAL_HOURS = "12"
+
+# Preferred-IP 自动优选
+OPTIMIZER_ENABLED = "1"
+OPTIMIZER_BATCH = "4"
+OPTIMIZER_TOP_N = "20"
+CANDIDATES_PER_CIDR = "4"
+PROBE_PACKETS = "4"
+
+# Globalping：中国移动 / 联通 / 电信探针
+GLOBALPING_ENABLED = "1"
+GP_CM_MAGIC = "China Mobile Communications"
+GP_CU_MAGIC = "CHINA UNICOM China169 Backbone"
+GP_CT_MAGIC = "China Telecom"
+
+[observability]
+enabled = true
+head_sampling_rate = 0.1
+
+# KV 命名空间：先执行 npx wrangler kv namespace create XS_SUB_KV，把返回的 id 填到这里
+# binding 名称必须保持 XS_SUB_KV，代码里写死了这个名字
+# [[kv_namespaces]]
+# binding = "XS_SUB_KV"
+# id = "<KV_NAMESPACE_ID>"

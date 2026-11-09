@@ -1,0 +1,37 @@
+{
+  "name": "cf-sub-worker",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker Preferred-IP 智能订阅与节点中枢",
+  "private": true,
+  "scripts": {
+    "deploy": "npx wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  },
+  "cloudflare": {
+    "bindings": {
+      "DOMAIN": {
+        "description": "【自定义域名】你的子域名（例如 sub.example.com）。主域名必须已托管在同一个 Cloudflare 账号中；若暂无域名可留空，默认使用 workers.dev 免费域名。"
+      },
+      "ADMIN_EMAIL": {
+        "description": "【管理员邮箱】后台登录账号（默认 admin@example.com，首次登录后在后台使用此邮箱与密码登录）。"
+      },
+      "SUB_TITLE": {
+        "description": "【订阅节点标题】客户端订阅节点列表中展示的前缀名称（默认：Preferred-IP 三网实测订阅）。"
+      },
+      "PROXYIP": {
+        "description": "【备用反代出口】遇到 Cloudflare Error 1000 时的备用跳板 IP，绝大部分网站走原生直连，默认留空即可。"
+      },
+      "ADMIN_PASSWORD_V9": {
+        "description": "【管理员密码】首次登录后台的管理员强密码（建议至少 12 位，登录后可在后台修改）。"
+      },
+      "TOKEN_SECRET_V9": {
+        "description": "【Token 签名密钥】用于 HMAC 校验客户端订阅 Token 防篡改（推荐 24 位以上的随机英文字符串）。"
+      },
+      "VLESS_UUID_V9": {
+        "description": "【VLESS 节点 UUID】节点连接识别码（标准 UUID 格式，例如：12345678-1234-1234-1234-123456789abc）。"
+      }
+    }
+  }
+}
